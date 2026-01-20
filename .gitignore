@@ -62,3 +62,16 @@ frontend/node_modules/
 frontend/dist/
 frontend/.env
 frontend/.vite/
+
+# Secrets and tokens
+*_token*
+*_secret*
+*_key*
+ghp_*
+gho_*
+ghu_*
+ghs_*
+ghr_*
+*.pem
+*.key
+*.cert
