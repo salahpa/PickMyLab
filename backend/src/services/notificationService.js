@@ -28,7 +28,7 @@ const sendSMS = async (phone, message) => {
 const sendEmail = async (to, subject, html, text = null) => {
   try {
     const mailOptions = {
-      from: config.SMTP_FROM || 'noreply@tasheel.com',
+      from: config.SMTP_FROM || 'noreply@pickmylab.com',
       to: to,
       subject: subject,
       html: html,
@@ -50,7 +50,7 @@ const sendEmail = async (to, subject, html, text = null) => {
 const getTemplate = (type, data = {}) => {
   const templates = {
     booking_confirmed: {
-      subject: 'Booking Confirmed - Tasheel Healthcare',
+      subject: 'Booking Confirmed - PickMyLab Healthcare',
       html: `
         <h2>Booking Confirmed</h2>
         <p>Dear ${data.user_name || 'User'},</p>
@@ -60,11 +60,11 @@ const getTemplate = (type, data = {}) => {
         <p><strong>Time:</strong> ${data.booking_time}</p>
         <p><strong>Collection Type:</strong> ${data.collection_type === 'home' ? 'Home Collection' : 'Walk-in'}</p>
         <p>We'll notify you when a phlebotomist is assigned.</p>
-        <p>Thank you for choosing Tasheel Healthcare!</p>
+        <p>Thank you for choosing PickMyLab Healthcare!</p>
       `,
     },
     phlebotomist_assigned: {
-      subject: 'Phlebotomist Assigned - Tasheel Healthcare',
+      subject: 'Phlebotomist Assigned - PickMyLab Healthcare',
       html: `
         <h2>Phlebotomist Assigned</h2>
         <p>Dear ${data.user_name || 'User'},</p>
@@ -77,7 +77,7 @@ const getTemplate = (type, data = {}) => {
       `,
     },
     report_ready: {
-      subject: 'Your Lab Report is Ready - Tasheel Healthcare',
+      subject: 'Your Lab Report is Ready - PickMyLab Healthcare',
       html: `
         <h2>Lab Report Ready</h2>
         <p>Dear ${data.user_name || 'User'},</p>
@@ -89,7 +89,7 @@ const getTemplate = (type, data = {}) => {
       `,
     },
     payment_confirmed: {
-      subject: 'Payment Confirmed - Tasheel Healthcare',
+      subject: 'Payment Confirmed - PickMyLab Healthcare',
       html: `
         <h2>Payment Confirmed</h2>
         <p>Dear ${data.user_name || 'User'},</p>
@@ -101,7 +101,7 @@ const getTemplate = (type, data = {}) => {
       `,
     },
     booking_reminder: {
-      subject: 'Booking Reminder - Tasheel Healthcare',
+      subject: 'Booking Reminder - PickMyLab Healthcare',
       html: `
         <h2>Booking Reminder</h2>
         <p>Dear ${data.user_name || 'User'},</p>
@@ -113,7 +113,7 @@ const getTemplate = (type, data = {}) => {
       `,
     },
     otp: {
-      subject: 'Your OTP Code - Tasheel Healthcare',
+      subject: 'Your OTP Code - PickMyLab Healthcare',
       html: `
         <h2>OTP Verification</h2>
         <p>Dear ${data.user_name || 'User'},</p>

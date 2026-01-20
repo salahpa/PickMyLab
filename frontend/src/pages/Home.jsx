@@ -31,7 +31,7 @@ const Home = () => {
     <div className="home-page">
       <section className="hero">
         <div className="container">
-          <h1>Welcome to Tasheel HealthConnect</h1>
+          <h1>Welcome to PickMyLab</h1>
           <p>Your trusted lab aggregator platform</p>
           <div className="hero-actions">
             <Link to="/tests" className="btn btn-primary">
@@ -93,7 +93,7 @@ const Home = () => {
 
       <section className="features">
         <div className="container">
-          <h2>Why Choose Tasheel?</h2>
+          <h2>Why Choose PickMyLab?</h2>
           <div className="features-grid">
             <div className="feature-card">
               <h3>Compare Prices</h3>

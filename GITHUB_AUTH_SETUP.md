@@ -6,7 +6,7 @@
 
 1. Go to GitHub.com → Settings → Developer settings → Personal access tokens → Tokens (classic)
 2. Click "Generate new token (classic)"
-3. Give it a name: "Tasheel Project"
+3. Give it a name: "PickMyLab Project"
 4. Select scopes: Check `repo` (full control of private repositories)
 5. Click "Generate token"
 6. **COPY THE TOKEN** (you won't see it again!)

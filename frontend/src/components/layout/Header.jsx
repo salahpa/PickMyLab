@@ -17,7 +17,7 @@ const Header = () => {
       <div className="container">
         <div className="header-content">
           <Link to="/" className="logo">
-            <h1>Tasheel HealthConnect</h1>
+            <h1>PickMyLab</h1>
           </Link>
           <nav className="nav">
             <Link to="/">Home</Link>

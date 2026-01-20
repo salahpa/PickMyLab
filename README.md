@@ -1,8 +1,8 @@
-# TASHEEL HEALTHCARE PLATFORM
+# PICKMYLAB HEALTHCARE PLATFORM
 
 ## Lab Aggregator Platform - Complete Implementation Guide
 
-This repository contains the complete implementation plan, database schema, API structure, and development roadmap for the Tasheel Healthcare Platform - a multi-vendor lab aggregator platform similar to Talabat but for laboratory testing services.
+This repository contains the complete implementation plan, database schema, API structure, and development roadmap for the PickMyLab Healthcare Platform - a multi-vendor lab aggregator platform similar to Talabat but for laboratory testing services.
 
 ---
 
@@ -19,7 +19,7 @@ This repository contains the complete implementation plan, database schema, API 
 
 ## 🎯 Project Overview
 
-**Tasheel HealthConnect** is a comprehensive lab aggregator platform that enables users to:
+**PickMyLab** is a comprehensive lab aggregator platform that enables users to:
 
 - **Discover & Compare** lab tests and pricing from multiple vendor partners
 - **Book & Pay** online with home collection or walk-in options
@@ -27,7 +27,7 @@ This repository contains the complete implementation plan, database schema, API 
 - **Receive Reports** with smart health insights and interactive analysis
 - **Consult Doctors** via teleconsultation for next steps
 
-**Business Model**: Tasheel acts as the aggregator handling customer interface, phlebotomist pool, delivery logistics, and smart report conversion. Lab partners handle test processing and report generation.
+**Business Model**: PickMyLab acts as the aggregator handling customer interface, phlebotomist pool, delivery logistics, and smart report conversion. Lab partners handle test processing and report generation.
 
 ---
 
@@ -122,16 +122,16 @@ This repository includes comprehensive documentation:
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd tasheel
+   cd pickmylab
    ```
 
 2. **Set up the database**
    ```bash
    # Create database
-   createdb tasheel_db
+   createdb pickmylab_db
    
    # Run schema
-   psql -U postgres -d tasheel_db -f database_schema.sql
+   psql -U postgres -d pickmylab_db -f database_schema.sql
    ```
 
 3. **Backend setup**
@@ -349,7 +349,7 @@ For questions or issues:
 
 ## 🙏 Acknowledgments
 
-Based on the comprehensive process notes document (Tasheel-Anex_2.pdf) for the Tasheel Healthcare Platform.
+Based on the comprehensive process notes document (Tasheel-Anex_2.pdf) for the PickMyLab Healthcare Platform.
 
 ---
 

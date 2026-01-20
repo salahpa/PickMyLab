@@ -10,8 +10,8 @@ Your repository has been initialized and the initial commit has been made.
 
 1. Go to [GitHub.com](https://github.com) and sign in
 2. Click the **"+"** icon in the top right → **"New repository"**
-3. Repository name: `tasheel` (or your preferred name)
-4. Description: "Tasheel Healthcare Platform - Lab Aggregator Platform"
+3. Repository name: `pickmylab` (or your preferred name)
+4. Description: "PickMyLab Healthcare Platform - Lab Aggregator Platform"
 5. Choose **Public** or **Private**
 6. **DO NOT** initialize with README, .gitignore, or license (we already have these)
 7. Click **"Create repository"**
@@ -22,7 +22,7 @@ After creating the repository, GitHub will show you commands. Use these:
 
 ```bash
 # Add remote repository (replace YOUR_USERNAME with your GitHub username)
-git remote add origin https://github.com/YOUR_USERNAME/tasheel.git
+git remote add origin https://github.com/YOUR_USERNAME/pickmylab.git
 
 # Rename branch to main (if needed)
 git branch -M main
@@ -38,8 +38,8 @@ git push -u origin main
 git remote -v
 
 # Should show:
-# origin  https://github.com/YOUR_USERNAME/tasheel.git (fetch)
-# origin  https://github.com/YOUR_USERNAME/tasheel.git (push)
+# origin  https://github.com/YOUR_USERNAME/pickmylab.git (fetch)
+# origin  https://github.com/YOUR_USERNAME/pickmylab.git (push)
 ```
 
 ## 🔄 Daily Workflow
@@ -128,7 +128,7 @@ ssh-keygen -t ed25519 -C "your_email@example.com"
 
 3. Change remote URL:
 ```bash
-git remote set-url origin git@github.com:YOUR_USERNAME/tasheel.git
+git remote set-url origin git@github.com:YOUR_USERNAME/pickmylab.git
 ```
 
 ## 🚨 Common Issues & Solutions

@@ -8,7 +8,7 @@ module.exports = {
   // Database
   DB_HOST: process.env.DB_HOST || 'localhost',
   DB_PORT: process.env.DB_PORT || 5432,
-  DB_NAME: process.env.DB_NAME || 'tasheel_db',
+  DB_NAME: process.env.DB_NAME || 'pickmylab_db',
   DB_USER: process.env.DB_USER || 'postgres',
   DB_PASSWORD: process.env.DB_PASSWORD,
 
@@ -19,7 +19,7 @@ module.exports = {
   // Email
   EMAIL_SERVICE: process.env.EMAIL_SERVICE || 'sendgrid',
   SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
-  EMAIL_FROM: process.env.EMAIL_FROM || 'noreply@tasheel.health',
+  EMAIL_FROM: process.env.EMAIL_FROM || 'noreply@pickmylab.com',
 
   // SMS
   SMS_SERVICE: process.env.SMS_SERVICE || 'twilio',

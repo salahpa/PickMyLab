@@ -1,5 +1,5 @@
 -- =====================================================
--- TASHEEL HEALTHCARE PLATFORM - DATABASE SCHEMA
+-- PICKMYLAB HEALTHCARE PLATFORM - DATABASE SCHEMA
 -- PostgreSQL Database Schema
 -- =====================================================
 

@@ -190,7 +190,7 @@ const Payment = () => {
                 <div className="bank-transfer-info">
                   <p>Please transfer the amount to:</p>
                   <div className="bank-details">
-                    <p><strong>Bank:</strong> Tasheel Bank</p>
+                    <p><strong>Bank:</strong> PickMyLab Bank</p>
                     <p><strong>Account Number:</strong> 1234567890</p>
                     <p><strong>IBAN:</strong> AE123456789012345678901</p>
                     <p><strong>Reference:</strong> {booking.booking_number}</p>

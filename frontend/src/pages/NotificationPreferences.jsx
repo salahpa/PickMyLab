@@ -71,7 +71,7 @@ const NotificationPreferences = () => {
       <div className="container">
         <h1>Notification Preferences</h1>
         <p className="page-description">
-          Manage how you receive notifications from Tasheel Healthcare
+          Manage how you receive notifications from PickMyLab Healthcare
         </p>
 
         {message && (

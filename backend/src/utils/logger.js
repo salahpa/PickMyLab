@@ -26,7 +26,7 @@ const consoleFormat = winston.format.combine(
 const logger = winston.createLogger({
   level: config.NODE_ENV === 'production' ? 'info' : 'debug',
   format: logFormat,
-  defaultMeta: { service: 'tasheel-api' },
+  defaultMeta: { service: 'pickmylab-api' },
   transports: [
     // Write all logs to console
     new winston.transports.Console({

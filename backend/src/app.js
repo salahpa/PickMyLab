@@ -20,7 +20,7 @@ app.use(
   cors({
     origin:
       config.NODE_ENV === 'production'
-        ? process.env.FRONTEND_URL || 'https://tasheel.health'
+        ? process.env.FRONTEND_URL || 'https://pickmylab.com'
         : 'http://localhost:3001',
     credentials: true,
   })
@@ -44,7 +44,7 @@ app.use('/api', apiLimiter);
 app.get('/health', (req, res) => {
   res.json({
     success: true,
-    message: 'Tasheel API is running',
+    message: 'PickMyLab API is running',
     timestamp: new Date().toISOString(),
     environment: config.NODE_ENV,
   });

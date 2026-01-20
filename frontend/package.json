@@ -1,7 +1,7 @@
 {
-  "name": "tasheel-frontend",
+  "name": "pickmylab-frontend",
   "version": "1.0.0",
-  "description": "Tasheel Healthcare Platform - Frontend Web Application",
+  "description": "PickMyLab Healthcare Platform - Frontend Web Application",
   "type": "module",
   "scripts": {
     "dev": "vite",

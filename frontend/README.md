@@ -1,6 +1,6 @@
-# Tasheel Frontend
+# PickMyLab Frontend
 
-Frontend web application for the Tasheel Healthcare Platform.
+Frontend web application for the PickMyLab Healthcare Platform.
 
 ## Setup
 

@@ -18,7 +18,7 @@ const ratingRoutes = require('./ratingRoutes');
 router.get('/', (req, res) => {
   res.json({
     success: true,
-    message: 'Tasheel Healthcare Platform API',
+    message: 'PickMyLab Healthcare Platform API',
     version: '1.0.0',
     endpoints: {
       auth: '/api/auth',

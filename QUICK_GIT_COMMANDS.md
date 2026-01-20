@@ -6,7 +6,7 @@
 # 1. Create repository on GitHub.com first, then:
 
 # 2. Add remote (replace YOUR_USERNAME with your GitHub username)
-git remote add origin https://github.com/YOUR_USERNAME/tasheel.git
+git remote add origin https://github.com/YOUR_USERNAME/pickmylab.git
 
 # 3. Push to GitHub
 git push -u origin main

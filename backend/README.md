@@ -1,6 +1,6 @@
-# Tasheel Backend API
+# PickMyLab Backend API
 
-Backend API server for the Tasheel Healthcare Platform.
+Backend API server for the PickMyLab Healthcare Platform.
 
 ## Setup
 
@@ -18,8 +18,8 @@ cp .env.example .env
 
 4. Make sure PostgreSQL is running and the database is created:
 ```bash
-createdb tasheel_db
-psql -U postgres -d tasheel_db -f ../database_schema.sql
+createdb pickmylab_db
+psql -U postgres -d pickmylab_db -f ../database_schema.sql
 ```
 
 5. Create logs directory:
