@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Tasheel Healthcare Platform - Setup Script
+# PickMyLab Healthcare Platform - Setup Script
 # This script helps set up the development environment
 
-echo "🚀 Setting up Tasheel Healthcare Platform..."
+echo "🚀 Setting up PickMyLab Healthcare Platform..."
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -27,11 +27,11 @@ fi
 
 # Create database
 echo -e "${BLUE}Creating database...${NC}"
-createdb tasheel_db 2>/dev/null || echo "Database already exists or error occurred"
+createdb pickmylab_db 2>/dev/null || echo "Database already exists or error occurred"
 
 # Run database schema
 echo -e "${BLUE}Running database schema...${NC}"
-psql -U postgres -d tasheel_db -f database_schema.sql
+psql -U postgres -d pickmylab_db -f database_schema.sql
 
 # Setup backend
 echo -e "${BLUE}Setting up backend...${NC}"
