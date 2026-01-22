@@ -83,17 +83,23 @@ const getTests = async (filters = {}) => {
       query += ' AND ' + conditions.join(' AND ');
     }
 
-    query += ' ORDER BY t.name ASC';
-
-    // Get total count
-    const countQuery = query.replace(
-      'SELECT DISTINCT\n        t.id,',
-      'SELECT COUNT(DISTINCT t.id) as total'
-    );
-    const countResult = await pool.query(countQuery, values);
+    // Get total count (before adding ORDER BY and pagination)
+    let countQuery = `
+      SELECT COUNT(DISTINCT t.id) as total
+      FROM tests t
+      LEFT JOIN test_categories tc ON t.category_id = tc.id
+      WHERE t.is_active = TRUE
+    `;
+    
+    if (conditions.length > 0) {
+      countQuery += ' AND ' + conditions.join(' AND ');
+    }
+    
+    const countResult = await pool.query(countQuery, values.slice(0, values.length));
     const total = parseInt(countResult.rows[0].total);
 
-    // Add pagination
+    // Add ORDER BY and pagination to main query
+    query += ' ORDER BY t.name ASC';
     query += ` LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
     values.push(limit, offset);
 
