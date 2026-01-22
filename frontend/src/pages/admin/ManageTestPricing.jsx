@@ -45,11 +45,21 @@ const ManageTestPricing = () => {
         adminService.getAllLabPartners(),
         adminService.getAllTestsAdmin({ limit: 1000 }),
       ]);
-      setLabPartners(labsRes.data.lab_partners);
-      setTests(testsRes.data.tests);
+      
+      // Handle response structure - check what we actually get
+      console.log('Labs response:', labsRes);
+      console.log('Tests response:', testsRes);
+      
+      // Response structure: { success: true, data: { lab_partners: [], pagination: {} } }
+      const labs = labsRes?.data?.lab_partners || labsRes?.lab_partners || [];
+      const tests = testsRes?.data?.tests || testsRes?.tests || [];
+      
+      setLabPartners(labs);
+      setTests(tests);
     } catch (error) {
       console.error('Error loading data:', error);
-      alert('Error loading data. Please try again.');
+      console.error('Error details:', error.response?.data);
+      alert(`Error loading data: ${error.response?.data?.error?.message || error.message}. Please check console for details.`);
     } finally {
       setLoading(false);
     }
@@ -58,21 +68,28 @@ const ManageTestPricing = () => {
   const loadPricing = async () => {
     try {
       const response = await adminService.getTestPricing(selectedLab);
-      setPricing(response.data);
+      // Handle response structure
+      const pricingData = response.data?.data || response.data || response || [];
+      setPricing(Array.isArray(pricingData) ? pricingData : []);
     } catch (error) {
       console.error('Error loading pricing:', error);
-      alert('Error loading pricing. Please try again.');
+      console.error('Error details:', error.response?.data);
+      alert(`Error loading pricing: ${error.response?.data?.error?.message || error.message}. Please check console for details.`);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await adminService.upsertTestPricing({
-        ...formData,
+      const submitData = {
+        lab_partner_id: formData.lab_partner_id || selectedLab,
+        test_id: formData.test_id,
         price: parseFloat(formData.price),
-        turnaround_time_hours: parseInt(formData.turnaround_time_hours),
-      });
+        turnaround_time_hours: parseInt(formData.turnaround_time_hours) || 24,
+        is_available: formData.is_available !== undefined ? formData.is_available : true,
+      };
+      
+      await adminService.upsertTestPricing(submitData);
       alert('Pricing saved successfully!');
       setShowForm(false);
       setEditingPricing(null);
@@ -80,14 +97,15 @@ const ManageTestPricing = () => {
       loadPricing();
     } catch (error) {
       console.error('Error saving pricing:', error);
-      alert(error.response?.data?.error?.message || 'Error saving pricing.');
+      console.error('Error details:', error.response?.data);
+      alert(`Error saving pricing: ${error.response?.data?.error?.message || error.message}. Please check console for details.`);
     }
   };
 
   const handleEdit = (price) => {
     setEditingPricing(price);
     setFormData({
-      lab_partner_id: price.lab_partner_id,
+      lab_partner_id: price.lab_partner_id || selectedLab,
       test_id: price.test_id,
       price: price.price,
       turnaround_time_hours: price.turnaround_time_hours || 24,
