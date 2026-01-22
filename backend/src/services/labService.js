@@ -160,12 +160,32 @@ const getLabPartnerTests = async (labId, filters = {}) => {
 
     query += ' ORDER BY t.name ASC';
 
-    // Get total count
-    const countQuery = query.replace(
-      'SELECT \n        t.id,',
-      'SELECT COUNT(DISTINCT t.id) as total'
-    );
-    const countResult = await pool.query(countQuery, values);
+    // Get total count - create separate count query
+    let countQuery = `
+      SELECT COUNT(DISTINCT t.id) as total
+      FROM lab_test_pricing ltp
+      JOIN tests t ON ltp.test_id = t.id
+      LEFT JOIN test_categories tc ON t.category_id = tc.id
+      WHERE ltp.lab_partner_id = $1 
+        AND ltp.is_available = TRUE 
+        AND t.is_active = TRUE
+    `;
+    const countValues = [labId];
+    let countParamCount = 2;
+
+    if (category_id) {
+      countQuery += ` AND t.category_id = $${countParamCount}`;
+      countValues.push(category_id);
+      countParamCount++;
+    }
+
+    if (search) {
+      countQuery += ` AND (t.name ILIKE $${countParamCount} OR t.description ILIKE $${countParamCount} OR t.code ILIKE $${countParamCount})`;
+      countValues.push(`%${search}%`);
+      countParamCount++;
+    }
+
+    const countResult = await pool.query(countQuery, countValues);
     const total = parseInt(countResult.rows[0].total);
 
     // Add pagination

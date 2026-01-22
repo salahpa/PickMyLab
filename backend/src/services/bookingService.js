@@ -333,12 +333,22 @@ const getUserBookings = async (userId, filters = {}) => {
 
     query += ' ORDER BY b.created_at DESC';
 
-    // Get total count
-    const countQuery = query.replace(
-      'SELECT \n        b.id,',
-      'SELECT COUNT(*) as total'
-    );
-    const countResult = await pool.query(countQuery, values);
+    // Get total count - create separate count query
+    let countQuery = `
+      SELECT COUNT(*) as total
+      FROM bookings b
+      WHERE b.user_id = $1
+    `;
+    const countValues = [userId];
+    let countParamCount = 2;
+
+    if (status) {
+      countQuery += ` AND b.booking_status = $${countParamCount}`;
+      countValues.push(status);
+      countParamCount++;
+    }
+
+    const countResult = await pool.query(countQuery, countValues);
     const total = parseInt(countResult.rows[0].total);
 
     // Add pagination

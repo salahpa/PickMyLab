@@ -132,21 +132,18 @@ const ManageContent = () => {
 
   if (loading) {
     return (
-      <div className="container">
-        <div className="loading">Loading content...</div>
+      <div className="admin-loading">
+        <div className="admin-spinner"></div>
+        <p>Loading content...</p>
       </div>
     );
   }
 
   return (
     <div className="admin-page">
-      <div className="container">
-        <div className="page-header">
-          <h1>Content Management</h1>
-          <button onClick={() => navigate('/admin')} className="btn btn-outline">
-            Back to Dashboard
-          </button>
-        </div>
+      <div className="admin-page-header">
+        <h1>Content Management</h1>
+      </div>
 
         <div className="tabs">
           <button
@@ -383,7 +380,6 @@ const ManageContent = () => {
             )}
           </div>
         )}
-      </div>
     </div>
   );
 };

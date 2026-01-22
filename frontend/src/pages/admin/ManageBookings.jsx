@@ -40,11 +40,14 @@ const ManageBookings = () => {
         page: filters.page,
         limit: 20,
       });
-      setBookings(response.data.bookings);
-      setPagination(response.data.pagination);
+      // Handle response structure
+      const data = response.data?.data || response.data;
+      setBookings(data?.bookings || []);
+      setPagination(data?.pagination || {});
     } catch (error) {
       console.error('Error loading bookings:', error);
-      alert('Error loading bookings. Please try again.');
+      console.error('Error details:', error.response?.data);
+      alert(`Error loading bookings: ${error.response?.data?.error?.message || error.message}. Please check console for details.`);
     } finally {
       setLoading(false);
     }
@@ -103,11 +106,8 @@ const ManageBookings = () => {
   return (
     <div className="admin-page">
       <div className="container">
-        <div className="page-header">
+        <div className="admin-page-header">
           <h1>Manage Bookings</h1>
-          <button onClick={() => navigate('/admin')} className="btn btn-outline">
-            Back to Dashboard
-          </button>
         </div>
 
         <div className="filters">

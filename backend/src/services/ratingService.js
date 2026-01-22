@@ -172,9 +172,41 @@ const getRatings = async (filters = {}) => {
 
     query += ' ORDER BY r.created_at DESC';
 
-    // Get total count
-    const countQuery = query.replace('SELECT \n        r.*,', 'SELECT COUNT(*) as total');
-    const countResult = await pool.query(countQuery, values);
+    // Get total count - create separate count query
+    let countQuery = `
+      SELECT COUNT(*) as total
+      FROM ratings r
+      JOIN users u ON r.user_id = u.id
+      WHERE 1=1
+    `;
+    const countValues = [];
+    let countParamCount = 1;
+
+    if (entity_type) {
+      countQuery += ` AND r.rated_entity_type = $${countParamCount}`;
+      countValues.push(entity_type);
+      countParamCount++;
+    }
+
+    if (entity_id) {
+      countQuery += ` AND r.rated_entity_id = $${countParamCount}`;
+      countValues.push(entity_id);
+      countParamCount++;
+    }
+
+    if (booking_id) {
+      countQuery += ` AND r.booking_id = $${countParamCount}`;
+      countValues.push(booking_id);
+      countParamCount++;
+    }
+
+    if (user_id) {
+      countQuery += ` AND r.user_id = $${countParamCount}`;
+      countValues.push(user_id);
+      countParamCount++;
+    }
+
+    const countResult = await pool.query(countQuery, countValues);
     const total = parseInt(countResult.rows[0].total);
 
     // Add pagination

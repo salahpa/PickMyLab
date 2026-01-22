@@ -1,0 +1,184 @@
+/* ============================================
+   ADMIN UTILITY CLASSES
+   For quick fixes across all admin pages
+   ============================================ */
+
+/* Replace old button classes */
+.btn.btn-primary,
+button.btn-primary {
+  background: var(--admin-primary) !important;
+  color: white !important;
+  border: none !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+}
+
+.btn.btn-primary:hover {
+  background: var(--admin-primary-dark) !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn.btn-outline,
+button.btn-outline {
+  background: white !important;
+  color: var(--admin-primary) !important;
+  border: 1px solid var(--admin-primary) !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+}
+
+.btn.btn-outline:hover {
+  background: var(--admin-primary) !important;
+  color: white !important;
+}
+
+.btn.btn-sm,
+button.btn-sm {
+  padding: 0.5rem 1rem !important;
+  font-size: 0.8125rem !important;
+}
+
+.btn.btn-danger,
+button.btn-danger {
+  background: var(--admin-danger) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.btn.btn-danger:hover {
+  background: #dc2626 !important;
+}
+
+/* Replace old input classes */
+.input,
+input.input {
+  width: 100% !important;
+  padding: 0.75rem 1rem !important;
+  border: 1px solid var(--admin-border) !important;
+  border-radius: 8px !important;
+  font-size: 0.875rem !important;
+  transition: all 0.2s !important;
+  background: white !important;
+}
+
+.input:focus,
+input.input:focus {
+  outline: none !important;
+  border-color: var(--admin-primary) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+}
+
+/* Replace old table classes */
+.table-container {
+  overflow-x: auto !important;
+  margin-top: 1.5rem !important;
+}
+
+.table-container table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+.table-container table thead {
+  background: var(--admin-bg) !important;
+}
+
+.table-container table th {
+  padding: 0.75rem 1rem !important;
+  text-align: left !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  color: var(--admin-text) !important;
+  border-bottom: 2px solid var(--admin-border) !important;
+}
+
+.table-container table td {
+  padding: 1rem !important;
+  border-bottom: 1px solid var(--admin-border) !important;
+  font-size: 0.875rem !important;
+  color: var(--admin-text) !important;
+}
+
+.table-container table tbody tr:hover {
+  background: var(--admin-bg) !important;
+}
+
+/* Replace old status badge classes */
+.status-badge {
+  display: inline-block !important;
+  padding: 0.25rem 0.75rem !important;
+  border-radius: 12px !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  text-transform: capitalize !important;
+}
+
+.status-badge.active,
+.status-badge.green {
+  background: #d1fae5 !important;
+  color: #065f46 !important;
+}
+
+.status-badge.inactive,
+.status-badge.red {
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--admin-border);
+}
+
+.tab {
+  padding: 0.75rem 1.5rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--admin-text-light);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: -2px;
+}
+
+.tab:hover {
+  color: var(--admin-primary);
+}
+
+.tab.active {
+  color: var(--admin-primary);
+  border-bottom-color: var(--admin-primary);
+}
+
+/* Section Header */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.section-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--admin-text);
+  margin: 0;
+}
+
+/* Remove container class from admin pages */
+.admin-page .container {
+  max-width: none !important;
+  padding: 0 !important;
+}

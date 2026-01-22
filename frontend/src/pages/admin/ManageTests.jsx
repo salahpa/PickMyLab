@@ -118,21 +118,21 @@ const ManageTests = () => {
 
   if (loading) {
     return (
-      <div className="container">
-        <div className="loading">Loading tests...</div>
+      <div className="admin-loading">
+        <div className="admin-spinner"></div>
+        <p>Loading tests...</p>
       </div>
     );
   }
 
   return (
     <div className="admin-page">
-      <div className="container">
-        <div className="page-header">
-          <h1>Manage Tests</h1>
-          <button onClick={() => { resetForm(); setShowForm(true); }} className="btn btn-primary">
-            Add New Test
-          </button>
-        </div>
+      <div className="admin-page-header">
+        <h1>Manage Tests</h1>
+        <button onClick={() => { resetForm(); setShowForm(true); }} className="admin-btn admin-btn-primary">
+          Add New Test
+        </button>
+      </div>
 
         <div className="filters">
           <input
@@ -140,12 +140,12 @@ const ManageTests = () => {
             placeholder="Search tests..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="input"
+            className="admin-input"
           />
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="input"
+            className="admin-input"
           >
             <option value="">All Categories</option>
             {categories.map((cat) => (
@@ -168,7 +168,7 @@ const ManageTests = () => {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
-                    className="input"
+                    className="admin-input"
                   />
                 </div>
 
@@ -179,7 +179,7 @@ const ManageTests = () => {
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
                     required
-                    className="input"
+                    className="admin-input"
                   />
                 </div>
 
@@ -188,7 +188,7 @@ const ManageTests = () => {
                   <select
                     value={formData.category_id}
                     onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-                    className="input"
+                    className="admin-input"
                   >
                     <option value="">Select Category</option>
                     {categories.map((cat) => (
@@ -204,7 +204,7 @@ const ManageTests = () => {
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="input"
+                    className="admin-input"
                     rows="3"
                   />
                 </div>
@@ -214,7 +214,7 @@ const ManageTests = () => {
                   <select
                     value={formData.sample_type}
                     onChange={(e) => setFormData({ ...formData, sample_type: e.target.value })}
-                    className="input"
+                    className="admin-input"
                   >
                     <option value="blood">Blood</option>
                     <option value="urine">Urine</option>
@@ -257,13 +257,13 @@ const ManageTests = () => {
                 </div>
 
                 <div className="form-actions">
-                  <button type="submit" className="btn btn-primary">
+                  <button type="submit" className="admin-btn admin-btn-primary">
                     {editingTest ? 'Update' : 'Create'} Test
                   </button>
                   <button
                     type="button"
                     onClick={() => { setShowForm(false); resetForm(); }}
-                    className="btn btn-outline"
+                    className="admin-btn admin-btn-outline"
                   >
                     Cancel
                   </button>
@@ -273,8 +273,8 @@ const ManageTests = () => {
           </div>
         )}
 
-        <div className="table-container">
-          <table>
+        <div className="admin-table-wrapper">
+          <table className="admin-table">
             <thead>
               <tr>
                 <th>Code</th>
@@ -288,7 +288,7 @@ const ManageTests = () => {
             <tbody>
               {tests.length === 0 ? (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: 'center' }}>
+                  <td colSpan="6" className="admin-table-empty">
                     No tests found. Click "Add New Test" to create one.
                   </td>
                 </tr>
@@ -300,20 +300,21 @@ const ManageTests = () => {
                     <td>{test.category_name || 'N/A'}</td>
                     <td>{test.sample_type}</td>
                     <td>
-                      <span className={`status-badge ${test.is_active ? 'active' : 'inactive'}`}>
+                      <span className={`admin-status-badge ${test.is_active ? 'completed' : 'cancelled'}`}>
                         {test.is_active ? 'Active' : 'Inactive'}
                       </span>
                     </td>
                     <td>
                       <button
                         onClick={() => handleEdit(test)}
-                        className="btn btn-sm btn-outline"
+                        className="admin-btn admin-btn-sm admin-btn-outline"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(test.id)}
-                        className="btn btn-sm btn-danger"
+                        className="admin-btn admin-btn-sm admin-btn-outline"
+                        style={{ marginLeft: '0.5rem', color: 'var(--admin-danger)', borderColor: 'var(--admin-danger)' }}
                       >
                         Delete
                       </button>
@@ -325,12 +326,6 @@ const ManageTests = () => {
           </table>
         </div>
 
-        <div className="page-actions">
-          <button onClick={() => navigate('/admin')} className="btn btn-outline">
-            Back to Dashboard
-          </button>
-        </div>
-      </div>
     </div>
   );
 };

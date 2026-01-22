@@ -190,12 +190,23 @@ const getPaymentHistory = async (userId, filters = {}) => {
 
     query += ' ORDER BY p.created_at DESC';
 
-    // Get total count
-    const countQuery = query.replace(
-      'SELECT \n        p.id,',
-      'SELECT COUNT(*) as total'
-    );
-    const countResult = await pool.query(countQuery, values);
+    // Get total count - create separate count query
+    let countQuery = `
+      SELECT COUNT(*) as total
+      FROM payments p
+      JOIN bookings b ON p.booking_id = b.id
+      WHERE p.user_id = $1
+    `;
+    const countValues = [userId];
+    let countParamCount = 2;
+
+    if (filters.status) {
+      countQuery += ` AND p.status = $${countParamCount}`;
+      countValues.push(filters.status);
+      countParamCount++;
+    }
+
+    const countResult = await pool.query(countQuery, countValues);
     const total = parseInt(countResult.rows[0].total);
 
     // Add pagination

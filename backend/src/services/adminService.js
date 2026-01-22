@@ -167,14 +167,46 @@ const getAllBookings = async (filters = {}) => {
       paramCount++;
     }
 
-    query += ' ORDER BY b.created_at DESC';
-
-    // Get total count
-    const countQuery = query.replace('SELECT \n        b.*,', 'SELECT COUNT(*) as total');
-    const countResult = await pool.query(countQuery, values);
+    // Get total count (before ORDER BY and pagination)
+    let countQuery = `
+      SELECT COUNT(*) as total
+      FROM bookings b
+      JOIN users u ON b.user_id = u.id
+      LEFT JOIN lab_partners lp ON b.lab_partner_id = lp.id
+      LEFT JOIN users ph ON b.phlebotomist_id = ph.id
+      WHERE 1=1
+    `;
+    const countValues = [];
+    let countParamCount = 1;
+    
+    if (status) {
+      countQuery += ` AND b.booking_status = $${countParamCount}`;
+      countValues.push(status);
+      countParamCount++;
+    }
+    
+    if (date_from) {
+      countQuery += ` AND b.preferred_date >= $${countParamCount}`;
+      countValues.push(date_from);
+      countParamCount++;
+    }
+    
+    if (date_to) {
+      countQuery += ` AND b.preferred_date <= $${countParamCount}`;
+      countValues.push(date_to);
+      countParamCount++;
+    }
+    
+    if (user_id) {
+      countQuery += ` AND b.user_id = $${countParamCount}`;
+      countValues.push(user_id);
+    }
+    
+    const countResult = await pool.query(countQuery, countValues);
     const total = parseInt(countResult.rows[0].total);
 
-    // Add pagination
+    // Add ORDER BY and pagination to main query
+    query += ' ORDER BY b.created_at DESC';
     query += ` LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
     values.push(limit, offset);
 
@@ -276,14 +308,42 @@ const getAllUsers = async (filters = {}) => {
       paramCount++;
     }
 
-    query += ' ORDER BY created_at DESC';
-
-    // Get total count
-    const countQuery = query.replace('SELECT \n        id,', 'SELECT COUNT(*) as total');
-    const countResult = await pool.query(countQuery, values);
+    // Get total count (before ORDER BY and pagination)
+    let countQuery = `
+      SELECT COUNT(*) as total
+      FROM users
+      WHERE 1=1
+    `;
+    const countValues = [];
+    let countParamCount = 1;
+    
+    if (user_type) {
+      countQuery += ` AND user_type = $${countParamCount}`;
+      countValues.push(user_type);
+      countParamCount++;
+    }
+    
+    if (is_active !== undefined) {
+      countQuery += ` AND is_active = $${countParamCount}`;
+      countValues.push(is_active);
+      countParamCount++;
+    }
+    
+    if (search) {
+      countQuery += ` AND (
+        first_name ILIKE $${countParamCount} OR
+        last_name ILIKE $${countParamCount} OR
+        email ILIKE $${countParamCount} OR
+        phone ILIKE $${countParamCount}
+      )`;
+      countValues.push(`%${search}%`);
+    }
+    
+    const countResult = await pool.query(countQuery, countValues);
     const total = parseInt(countResult.rows[0].total);
 
-    // Add pagination
+    // Add ORDER BY and pagination to main query
+    query += ' ORDER BY created_at DESC';
     query += ` LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
     values.push(limit, offset);
 

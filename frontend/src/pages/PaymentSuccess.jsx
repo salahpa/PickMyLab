@@ -33,7 +33,7 @@ const PaymentSuccess = () => {
               </div>
               <div className="info-item">
                 <span>Amount Paid:</span>
-                <strong>AED {parseFloat(currentBooking.final_amount).toFixed(2)}</strong>
+                <strong>AED {parseFloat(currentBooking.final_amount || 0).toFixed(2)}</strong>
               </div>
               <div className="info-item">
                 <span>Payment Status:</span>

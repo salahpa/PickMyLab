@@ -35,11 +35,14 @@ const ManageUsers = () => {
         page: filters.page,
         limit: 20,
       });
-      setUsers(response.data.users);
-      setPagination(response.data.pagination);
+      // Handle response structure
+      const data = response.data?.data || response.data;
+      setUsers(data?.users || []);
+      setPagination(data?.pagination || {});
     } catch (error) {
       console.error('Error loading users:', error);
-      alert('Error loading users. Please try again.');
+      console.error('Error details:', error.response?.data);
+      alert(`Error loading users: ${error.response?.data?.error?.message || error.message}. Please check console for details.`);
     } finally {
       setLoading(false);
     }
@@ -83,11 +86,8 @@ const ManageUsers = () => {
   return (
     <div className="admin-page">
       <div className="container">
-        <div className="page-header">
+        <div className="admin-page-header">
           <h1>Manage Users</h1>
-          <button onClick={() => navigate('/admin')} className="btn btn-outline">
-            Back to Dashboard
-          </button>
         </div>
 
         <div className="filters">

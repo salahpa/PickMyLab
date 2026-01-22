@@ -268,9 +268,28 @@ const getUserNotifications = async (userId, filters = {}) => {
 
     query += ' ORDER BY created_at DESC';
 
-    // Get total count
-    const countQuery = query.replace('SELECT *', 'SELECT COUNT(*) as total');
-    const countResult = await pool.query(countQuery, values);
+    // Get total count - create separate count query
+    let countQuery = `
+      SELECT COUNT(*) as total
+      FROM notifications
+      WHERE user_id = $1
+    `;
+    const countValues = [userId];
+    let countParamCount = 2;
+
+    if (type) {
+      countQuery += ` AND type = $${countParamCount}`;
+      countValues.push(type);
+      countParamCount++;
+    }
+
+    if (status) {
+      countQuery += ` AND status = $${countParamCount}`;
+      countValues.push(status);
+      countParamCount++;
+    }
+
+    const countResult = await pool.query(countQuery, countValues);
     const total = parseInt(countResult.rows[0].total);
 
     // Add pagination

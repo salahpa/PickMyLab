@@ -69,11 +69,8 @@ const ManagePhlebotomists = () => {
   return (
     <div className="admin-page">
       <div className="container">
-        <div className="page-header">
+        <div className="admin-page-header">
           <h1>Manage Phlebotomists</h1>
-          <button onClick={() => navigate('/admin')} className="btn btn-outline">
-            Back to Dashboard
-          </button>
         </div>
 
         <div className="filters">

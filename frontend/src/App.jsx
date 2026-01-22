@@ -1,7 +1,9 @@
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
+import AdminLayout from './components/layout/AdminLayout';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import AdminLogin from './pages/admin/AdminLogin';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Tests from './pages/Tests';
@@ -12,6 +14,7 @@ import BookingDetail from './pages/BookingDetail';
 import Payment from './pages/Payment';
 import PaymentHistory from './pages/PaymentHistory';
 import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentReceipt from './pages/PaymentReceipt';
 import Reports from './pages/Reports';
 import ReportDetail from './pages/ReportDetail';
 import SmartReport from './pages/SmartReport';
@@ -32,6 +35,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/notifications/preferences" element={<NotificationPreferences />} />
@@ -44,18 +48,19 @@ function App() {
         <Route path="/bookings/:id/success" element={<PaymentSuccess />} />
         <Route path="/payment/:id" element={<Payment />} />
         <Route path="/payments" element={<PaymentHistory />} />
+        <Route path="/payments/:id/receipt" element={<PaymentReceipt />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/reports/:id" element={<ReportDetail />} />
         <Route path="/reports/:id/smart" element={<SmartReport />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/tests" element={<ManageTests />} />
-        <Route path="/admin/categories" element={<ManageCategories />} />
-        <Route path="/admin/lab-partners" element={<ManageLabPartners />} />
-        <Route path="/admin/bookings" element={<ManageBookings />} />
-        <Route path="/admin/users" element={<ManageUsers />} />
-        <Route path="/admin/phlebotomists" element={<ManagePhlebotomists />} />
-        <Route path="/admin/content" element={<ManageContent />} />
-        <Route path="/admin/pricing" element={<ManageTestPricing />} />
+        <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
+        <Route path="/admin/tests" element={<AdminLayout><ManageTests /></AdminLayout>} />
+        <Route path="/admin/categories" element={<AdminLayout><ManageCategories /></AdminLayout>} />
+        <Route path="/admin/lab-partners" element={<AdminLayout><ManageLabPartners /></AdminLayout>} />
+        <Route path="/admin/bookings" element={<AdminLayout><ManageBookings /></AdminLayout>} />
+        <Route path="/admin/users" element={<AdminLayout><ManageUsers /></AdminLayout>} />
+        <Route path="/admin/phlebotomists" element={<AdminLayout><ManagePhlebotomists /></AdminLayout>} />
+        <Route path="/admin/content" element={<AdminLayout><ManageContent /></AdminLayout>} />
+        <Route path="/admin/pricing" element={<AdminLayout><ManageTestPricing /></AdminLayout>} />
       </Routes>
     </Layout>
   );

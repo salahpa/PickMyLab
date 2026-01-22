@@ -24,10 +24,18 @@ const Header = () => {
             <Link to="/tests">Tests</Link>
             {isAuthenticated ? (
               <>
-                <Link to="/bookings">My Bookings</Link>
-                <Link to="/payments">Payments</Link>
-                <Link to="/reports">Reports</Link>
-                <Link to="/profile">Profile</Link>
+                {user?.user_type === 'admin' || user?.user_type === 'ops' ? (
+                  <Link to="/admin" className="btn btn-outline">
+                    Admin Panel
+                  </Link>
+                ) : (
+                  <>
+                    <Link to="/bookings">My Bookings</Link>
+                    <Link to="/payments">Payments</Link>
+                    <Link to="/reports">Reports</Link>
+                    <Link to="/profile">Profile</Link>
+                  </>
+                )}
                 <button onClick={handleLogout} className="btn btn-outline">
                   Logout
                 </button>

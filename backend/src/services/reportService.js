@@ -69,12 +69,39 @@ const getUserReports = async (userId, filters = {}) => {
 
     query += ' ORDER BY lr.report_date DESC, lr.created_at DESC';
 
-    // Get total count
-    const countQuery = query.replace(
-      'SELECT \n        lr.id,',
-      'SELECT COUNT(*) as total'
-    );
-    const countResult = await pool.query(countQuery, values);
+    // Get total count - create separate count query
+    let countQuery = `
+      SELECT COUNT(*) as total
+      FROM lab_reports lr
+      JOIN bookings b ON lr.booking_id = b.id
+      JOIN lab_partners lp ON lr.lab_partner_id = lp.id
+      WHERE b.user_id = $1
+    `;
+    const countValues = [userId];
+    let countParamCount = 2;
+
+    if (test_id) {
+      countQuery += ` AND EXISTS (
+        SELECT 1 FROM booking_tests bt 
+        WHERE bt.booking_id = b.id AND bt.test_id = $${countParamCount}
+      )`;
+      countValues.push(test_id);
+      countParamCount++;
+    }
+
+    if (date_from) {
+      countQuery += ` AND lr.report_date >= $${countParamCount}`;
+      countValues.push(date_from);
+      countParamCount++;
+    }
+
+    if (date_to) {
+      countQuery += ` AND lr.report_date <= $${countParamCount}`;
+      countValues.push(date_to);
+      countParamCount++;
+    }
+
+    const countResult = await pool.query(countQuery, countValues);
     const total = parseInt(countResult.rows[0].total);
 
     // Add pagination

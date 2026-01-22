@@ -41,7 +41,13 @@ const Login = () => {
       ).unwrap();
 
       if (result) {
-        navigate('/');
+        // Check user type and redirect accordingly
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user.user_type === 'admin' || user.user_type === 'ops') {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
       }
     } catch (err) {
       setError(err || 'Login failed. Please check your credentials.');

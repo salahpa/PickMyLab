@@ -25,29 +25,38 @@ const Payment = () => {
   }, [id]);
 
   const loadBooking = async () => {
+    setLoading(true);
+    setError('');
     try {
       const response = await bookingService.getBookingById(id);
-      setBooking(response.data);
+      // Handle response structure - could be response.data.data or response.data
+      const bookingData = response.data?.data || response.data;
+      setBooking(bookingData);
 
       // If payment not completed, initiate payment
-      if (response.data.payment_status !== 'completed') {
-        await initiatePayment();
+      if (bookingData.payment_status !== 'completed') {
+        await initiatePayment(bookingData);
       }
     } catch (error) {
       console.error('Error loading booking:', error);
-      setError('Failed to load booking details');
+      const errorMessage = error.response?.data?.error?.message || error.message || 'Failed to load booking details';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  const initiatePayment = async () => {
+  const initiatePayment = async (bookingData) => {
     try {
       const response = await paymentService.initiatePayment(id, paymentMethod);
-      setPaymentIntent(response.data);
+      // Handle response structure
+      const paymentData = response.data?.data || response.data;
+      setPaymentIntent(paymentData);
     } catch (error) {
       console.error('Error initiating payment:', error);
-      setError('Failed to initiate payment');
+      const errorMessage = error.response?.data?.error?.message || error.message || 'Failed to initiate payment';
+      setError(errorMessage);
+      // Don't set loading to false here, let user see the error
     }
   };
 
@@ -55,6 +64,12 @@ const Payment = () => {
     e.preventDefault();
     setProcessing(true);
     setError('');
+
+    if (!paymentIntent) {
+      setError('Payment not initialized. Please refresh the page.');
+      setProcessing(false);
+      return;
+    }
 
     try {
       // In production, integrate with Stripe Elements or payment gateway SDK
@@ -64,33 +79,51 @@ const Payment = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // Confirm payment
-      const result = await paymentService.confirmPayment(
+      const response = await paymentService.confirmPayment(
         id,
         paymentIntent.payment_intent_id,
         `txn_${Date.now()}`
       );
 
-      if (result.success) {
+      // Handle response structure
+      const result = response.data?.data || response.data;
+      
+      if (result.success || response.data?.success) {
+        // Navigate to success page
         navigate(`/bookings/${id}/success`);
+      } else {
+        setError('Payment confirmation failed. Please try again.');
+        setProcessing(false);
       }
     } catch (err) {
-      setError(err || 'Payment failed. Please try again.');
+      console.error('Payment error:', err);
+      const errorMessage = err.response?.data?.error?.message || err.message || 'Payment failed. Please try again.';
+      setError(errorMessage);
       setProcessing(false);
     }
   };
 
   if (loading) {
     return (
-      <div className="container">
-        <div className="loading">Loading payment details...</div>
+      <div className="payment-page">
+        <div className="container">
+          <div className="loading">Loading payment details...</div>
+        </div>
       </div>
     );
   }
 
   if (!booking) {
     return (
-      <div className="container">
-        <div className="error">Booking not found</div>
+      <div className="payment-page">
+        <div className="container">
+          <div className="error-message">
+            {error || 'Booking not found'}
+          </div>
+          <button onClick={() => navigate('/bookings')} className="btn btn-primary">
+            Go to My Bookings
+          </button>
+        </div>
       </div>
     );
   }
@@ -202,29 +235,46 @@ const Payment = () => {
               <div className="payment-summary">
                 <div className="summary-row">
                   <span>Subtotal:</span>
-                  <span>AED {parseFloat(booking.total_amount).toFixed(2)}</span>
+                  <span>AED {parseFloat(booking.total_amount || 0).toFixed(2)}</span>
                 </div>
                 {booking.discount_amount > 0 && (
                   <div className="summary-row">
                     <span>Discount:</span>
-                    <span>-AED {parseFloat(booking.discount_amount).toFixed(2)}</span>
+                    <span>-AED {parseFloat(booking.discount_amount || 0).toFixed(2)}</span>
                   </div>
                 )}
                 <div className="summary-total">
                   <span>Total Amount:</span>
                   <span className="total-amount">
-                    AED {parseFloat(booking.final_amount).toFixed(2)}
+                    AED {parseFloat(booking.final_amount || 0).toFixed(2)}
                   </span>
                 </div>
               </div>
 
+              {!paymentIntent && !error && (
+                <div className="info-message">
+                  Initializing payment...
+                </div>
+              )}
+              
               <button
                 type="submit"
                 className="btn btn-primary btn-large"
                 disabled={processing || !paymentIntent}
               >
-                {processing ? 'Processing Payment...' : `Pay AED ${parseFloat(booking.final_amount).toFixed(2)}`}
+                {processing ? 'Processing Payment...' : `Pay AED ${parseFloat(booking.final_amount || 0).toFixed(2)}`}
               </button>
+              
+              {!paymentIntent && error && (
+                <button
+                  type="button"
+                  onClick={() => initiatePayment(booking)}
+                  className="btn btn-outline"
+                  style={{ marginTop: '1rem' }}
+                >
+                  Retry Payment Initialization
+                </button>
+              )}
             </form>
           </div>
 
@@ -238,11 +288,15 @@ const Payment = () => {
               
               <div className="tests-list">
                 <strong>Tests:</strong>
-                {booking.tests?.map((test, index) => (
-                  <div key={index} className="test-item">
-                    {test.test_name} - AED {parseFloat(test.price).toFixed(2)}
-                  </div>
-                ))}
+                {booking.tests && booking.tests.length > 0 ? (
+                  booking.tests.map((test, index) => (
+                    <div key={index} className="test-item">
+                      {test.test_name || test.name || 'Test'} - AED {parseFloat(test.price || 0).toFixed(2)}
+                    </div>
+                  ))
+                ) : (
+                  <div className="test-item">No tests found</div>
+                )}
               </div>
             </div>
           </div>

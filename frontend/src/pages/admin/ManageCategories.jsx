@@ -101,18 +101,18 @@ const ManageCategories = () => {
 
   if (loading) {
     return (
-      <div className="container">
-        <div className="loading">Loading categories...</div>
+      <div className="admin-loading">
+        <div className="admin-spinner"></div>
+        <p>Loading categories...</p>
       </div>
     );
   }
 
   return (
     <div className="admin-page">
-      <div className="container">
-        <div className="page-header">
+        <div className="admin-page-header">
           <h1>Manage Test Categories</h1>
-          <button onClick={() => { resetForm(); setShowForm(true); }} className="btn btn-primary">
+          <button onClick={() => { resetForm(); setShowForm(true); }} className="admin-btn admin-btn-primary">
             Add New Category
           </button>
         </div>
@@ -258,13 +258,6 @@ const ManageCategories = () => {
             </tbody>
           </table>
         </div>
-
-        <div className="page-actions">
-          <button onClick={() => navigate('/admin')} className="btn btn-outline">
-            Back to Dashboard
-          </button>
-        </div>
-      </div>
     </div>
   );
 };

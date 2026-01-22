@@ -15,17 +15,41 @@ const Home = () => {
     setLoading(true);
     try {
       const [categoriesRes, popularRes] = await Promise.all([
-        testService.getCategories(),
-        testService.getPopularTests(6),
+        testService.getCategories().catch(err => {
+          console.error('Error loading categories:', err);
+          return { data: [] };
+        }),
+        testService.getPopularTests(6).catch(err => {
+          console.error('Error loading popular tests:', err);
+          return { data: [] };
+        }),
       ]);
-      setCategories(categoriesRes.data);
-      setPopularTests(popularRes.data);
+      
+      // Handle response structure - could be response.data.data or response.data
+      const categories = categoriesRes?.data?.data || categoriesRes?.data || categoriesRes || [];
+      const popular = popularRes?.data?.data || popularRes?.data || popularRes || [];
+      
+      setCategories(Array.isArray(categories) ? categories : []);
+      setPopularTests(Array.isArray(popular) ? popular : []);
     } catch (error) {
       console.error('Error loading data:', error);
+      // Set empty arrays on error so page still renders
+      setCategories([]);
+      setPopularTests([]);
     } finally {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="home-page">
+        <div className="container">
+          <div className="loading">Loading...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="home-page">
@@ -44,7 +68,7 @@ const Home = () => {
         </div>
       </section>
 
-      {categories.length > 0 && (
+      {!loading && categories.length > 0 && (
         <section className="categories-section">
           <div className="container">
             <h2>Test Categories</h2>
@@ -64,7 +88,7 @@ const Home = () => {
         </section>
       )}
 
-      {popularTests.length > 0 && (
+      {!loading && popularTests.length > 0 && (
         <section className="popular-tests-section">
           <div className="container">
             <h2>Popular Tests</h2>
@@ -74,7 +98,7 @@ const Home = () => {
                   <h3>{test.name}</h3>
                   <p className="test-category">{test.category_name}</p>
                   {test.min_price && (
-                    <p className="test-price">From AED {test.min_price.toFixed(2)}</p>
+                    <p className="test-price">From AED {parseFloat(test.min_price || 0).toFixed(2)}</p>
                   )}
                   <Link to={`/tests/${test.id}`} className="btn btn-outline btn-small">
                     View Details
