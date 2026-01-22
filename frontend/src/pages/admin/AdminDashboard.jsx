@@ -15,12 +15,17 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
-    if (!user || (user.user_type !== 'admin' && user.user_type !== 'ops')) {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    if (user.user_type !== 'admin' && user.user_type !== 'ops') {
+      alert('Access denied. You need admin privileges to access this page.');
       navigate('/');
       return;
     }
     loadStats();
-  }, [dateRange]);
+  }, [dateRange, user, navigate]);
 
   const loadStats = async () => {
     setLoading(true);
