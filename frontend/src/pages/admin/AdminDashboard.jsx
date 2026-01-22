@@ -181,6 +181,27 @@ const AdminDashboard = () => {
               <h3>Content Management</h3>
               <p>Manage FAQs and Terms</p>
             </button>
+            <button
+              onClick={() => navigate('/admin/tests')}
+              className="action-card"
+            >
+              <h3>Manage Tests</h3>
+              <p>Add, edit, and manage tests</p>
+            </button>
+            <button
+              onClick={() => navigate('/admin/categories')}
+              className="action-card"
+            >
+              <h3>Manage Categories</h3>
+              <p>Manage test categories</p>
+            </button>
+            <button
+              onClick={() => navigate('/admin/lab-partners')}
+              className="action-card"
+            >
+              <h3>Manage Lab Partners</h3>
+              <p>Add and manage lab partners</p>
+            </button>
           </div>
         </div>
       </div>

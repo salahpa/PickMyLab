@@ -456,6 +456,594 @@ const updateTerms = async (termsData) => {
   }
 };
 
+/**
+ * ============================================
+ * TEST CATEGORIES MANAGEMENT
+ * ============================================
+ */
+
+/**
+ * Get all test categories (admin)
+ */
+const getAllCategories = async () => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM test_categories ORDER BY display_order ASC, name ASC'
+    );
+    return result.rows;
+  } catch (error) {
+    logger.error('Get all categories error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create test category
+ */
+const createCategory = async (categoryData) => {
+  try {
+    const { name, slug, description, icon_url, display_order, is_active } = categoryData;
+    
+    // Generate slug if not provided
+    const finalSlug = slug || name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    
+    const result = await pool.query(
+      `INSERT INTO test_categories (
+        name, slug, description, icon_url, display_order, is_active
+      ) VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING *`,
+      [
+        name,
+        finalSlug,
+        description || null,
+        icon_url || null,
+        display_order || 0,
+        is_active !== undefined ? is_active : true,
+      ]
+    );
+    return result.rows[0];
+  } catch (error) {
+    logger.error('Create category error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update test category
+ */
+const updateCategory = async (categoryId, categoryData) => {
+  try {
+    const { name, slug, description, icon_url, display_order, is_active } = categoryData;
+    
+    const result = await pool.query(
+      `UPDATE test_categories 
+       SET name = COALESCE($1, name),
+           slug = COALESCE($2, slug),
+           description = COALESCE($3, description),
+           icon_url = COALESCE($4, icon_url),
+           display_order = COALESCE($5, display_order),
+           is_active = COALESCE($6, is_active),
+           updated_at = NOW()
+       WHERE id = $7
+       RETURNING *`,
+      [name, slug, description, icon_url, display_order, is_active, categoryId]
+    );
+    
+    if (result.rows.length === 0) {
+      throw new Error('Category not found');
+    }
+    
+    return result.rows[0];
+  } catch (error) {
+    logger.error('Update category error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete test category
+ */
+const deleteCategory = async (categoryId) => {
+  try {
+    // Check if category has tests
+    const testsResult = await pool.query(
+      'SELECT COUNT(*) as count FROM tests WHERE category_id = $1',
+      [categoryId]
+    );
+    
+    if (parseInt(testsResult.rows[0].count) > 0) {
+      throw new Error('Cannot delete category with existing tests');
+    }
+    
+    await pool.query('DELETE FROM test_categories WHERE id = $1', [categoryId]);
+    return { success: true, message: 'Category deleted' };
+  } catch (error) {
+    logger.error('Delete category error:', error);
+    throw error;
+  }
+};
+
+/**
+ * ============================================
+ * TESTS MANAGEMENT
+ * ============================================
+ */
+
+/**
+ * Get all tests (admin)
+ */
+const getAllTestsAdmin = async (filters = {}) => {
+  try {
+    const { category_id, search, page = 1, limit = 50 } = filters;
+    const offset = (page - 1) * limit;
+    
+    let query = `
+      SELECT 
+        t.*,
+        tc.name as category_name
+      FROM tests t
+      LEFT JOIN test_categories tc ON t.category_id = tc.id
+      WHERE 1=1
+    `;
+    
+    const values = [];
+    let paramCount = 1;
+    
+    if (category_id) {
+      query += ` AND t.category_id = $${paramCount}`;
+      values.push(category_id);
+      paramCount++;
+    }
+    
+    if (search) {
+      query += ` AND (
+        t.name ILIKE $${paramCount} OR
+        t.code ILIKE $${paramCount} OR
+        t.description ILIKE $${paramCount}
+      )`;
+      values.push(`%${search}%`);
+      paramCount++;
+    }
+    
+    query += ' ORDER BY t.name ASC';
+    
+    // Get total count
+    let countQuery = `
+      SELECT COUNT(*) as total
+      FROM tests t
+      WHERE 1=1
+    `;
+    const countValues = [];
+    let countParamCount = 1;
+    
+    if (category_id) {
+      countQuery += ` AND t.category_id = $${countParamCount}`;
+      countValues.push(category_id);
+      countParamCount++;
+    }
+    
+    if (search) {
+      countQuery += ` AND (
+        t.name ILIKE $${countParamCount} OR
+        t.code ILIKE $${countParamCount} OR
+        t.description ILIKE $${countParamCount}
+      )`;
+      countValues.push(`%${search}%`);
+    }
+    
+    const countResult = await pool.query(countQuery, countValues);
+    const total = parseInt(countResult.rows[0].total);
+    
+    // Add pagination
+    query += ` LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
+    values.push(limit, offset);
+    
+    const result = await pool.query(query, values);
+    
+    return {
+      tests: result.rows,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        total_pages: Math.ceil(total / limit),
+      },
+    };
+  } catch (error) {
+    logger.error('Get all tests admin error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create test
+ */
+const createTest = async (testData) => {
+  try {
+    const {
+      name,
+      code,
+      category_id,
+      description,
+      sample_type,
+      fasting_required,
+      special_instructions,
+      is_active,
+    } = testData;
+    
+    const result = await pool.query(
+      `INSERT INTO tests (
+        name, code, category_id, description, sample_type,
+        fasting_required, special_instructions, is_active
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *`,
+      [
+        name,
+        code,
+        category_id || null,
+        description || null,
+        sample_type || 'blood',
+        fasting_required || false,
+        special_instructions || null,
+        is_active !== undefined ? is_active : true,
+      ]
+    );
+    return result.rows[0];
+  } catch (error) {
+    logger.error('Create test error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update test
+ */
+const updateTest = async (testId, testData) => {
+  try {
+    const {
+      name,
+      code,
+      category_id,
+      description,
+      sample_type,
+      fasting_required,
+      special_instructions,
+      is_active,
+    } = testData;
+    
+    const result = await pool.query(
+      `UPDATE tests 
+       SET name = COALESCE($1, name),
+           code = COALESCE($2, code),
+           category_id = COALESCE($3, category_id),
+           description = COALESCE($4, description),
+           sample_type = COALESCE($5, sample_type),
+           fasting_required = COALESCE($6, fasting_required),
+           special_instructions = COALESCE($7, special_instructions),
+           is_active = COALESCE($8, is_active),
+           updated_at = NOW()
+       WHERE id = $9
+       RETURNING *`,
+      [
+        name,
+        code,
+        category_id,
+        description,
+        sample_type,
+        fasting_required,
+        special_instructions,
+        is_active,
+        testId,
+      ]
+    );
+    
+    if (result.rows.length === 0) {
+      throw new Error('Test not found');
+    }
+    
+    return result.rows[0];
+  } catch (error) {
+    logger.error('Update test error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete test
+ */
+const deleteTest = async (testId) => {
+  try {
+    // Check if test has bookings
+    const bookingsResult = await pool.query(
+      'SELECT COUNT(*) as count FROM booking_tests WHERE test_id = $1',
+      [testId]
+    );
+    
+    if (parseInt(bookingsResult.rows[0].count) > 0) {
+      throw new Error('Cannot delete test with existing bookings');
+    }
+    
+    await pool.query('DELETE FROM tests WHERE id = $1', [testId]);
+    return { success: true, message: 'Test deleted' };
+  } catch (error) {
+    logger.error('Delete test error:', error);
+    throw error;
+  }
+};
+
+/**
+ * ============================================
+ * LAB PARTNERS MANAGEMENT
+ * ============================================
+ */
+
+/**
+ * Get all lab partners (admin)
+ */
+const getAllLabPartners = async (filters = {}) => {
+  try {
+    const { search, is_active, page = 1, limit = 50 } = filters;
+    const offset = (page - 1) * limit;
+    
+    let query = `
+      SELECT * FROM lab_partners
+      WHERE 1=1
+    `;
+    
+    const values = [];
+    let paramCount = 1;
+    
+    if (search) {
+      query += ` AND (
+        name ILIKE $${paramCount} OR
+        code ILIKE $${paramCount} OR
+        city ILIKE $${paramCount}
+      )`;
+      values.push(`%${search}%`);
+      paramCount++;
+    }
+    
+    if (is_active !== undefined) {
+      query += ` AND is_active = $${paramCount}`;
+      values.push(is_active);
+      paramCount++;
+    }
+    
+    query += ' ORDER BY name ASC';
+    
+    // Get total count
+    let countQuery = query.replace('SELECT *', 'SELECT COUNT(*) as total');
+    const countResult = await pool.query(countQuery, values);
+    const total = parseInt(countResult.rows[0].total);
+    
+    // Add pagination
+    query += ` LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
+    values.push(limit, offset);
+    
+    const result = await pool.query(query, values);
+    
+    return {
+      lab_partners: result.rows,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        total_pages: Math.ceil(total / limit),
+      },
+    };
+  } catch (error) {
+    logger.error('Get all lab partners error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create lab partner
+ */
+const createLabPartner = async (labData) => {
+  try {
+    const {
+      name,
+      code,
+      contact_email,
+      contact_phone,
+      address,
+      city,
+      service_zones,
+      commission_percentage,
+      is_active,
+    } = labData;
+    
+    const result = await pool.query(
+      `INSERT INTO lab_partners (
+        name, code, contact_email, contact_phone, address, city,
+        service_zones, commission_percentage, is_active
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING *`,
+      [
+        name,
+        code,
+        contact_email || null,
+        contact_phone || null,
+        address || null,
+        city || null,
+        service_zones || [],
+        commission_percentage || null,
+        is_active !== undefined ? is_active : true,
+      ]
+    );
+    return result.rows[0];
+  } catch (error) {
+    logger.error('Create lab partner error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update lab partner
+ */
+const updateLabPartner = async (labId, labData) => {
+  try {
+    const {
+      name,
+      code,
+      contact_email,
+      contact_phone,
+      address,
+      city,
+      service_zones,
+      commission_percentage,
+      is_active,
+    } = labData;
+    
+    const result = await pool.query(
+      `UPDATE lab_partners 
+       SET name = COALESCE($1, name),
+           code = COALESCE($2, code),
+           contact_email = COALESCE($3, contact_email),
+           contact_phone = COALESCE($4, contact_phone),
+           address = COALESCE($5, address),
+           city = COALESCE($6, city),
+           service_zones = COALESCE($7, service_zones),
+           commission_percentage = COALESCE($8, commission_percentage),
+           is_active = COALESCE($9, is_active),
+           updated_at = NOW()
+       WHERE id = $10
+       RETURNING *`,
+      [
+        name,
+        code,
+        contact_email,
+        contact_phone,
+        address,
+        city,
+        service_zones,
+        commission_percentage,
+        is_active,
+        labId,
+      ]
+    );
+    
+    if (result.rows.length === 0) {
+      throw new Error('Lab partner not found');
+    }
+    
+    return result.rows[0];
+  } catch (error) {
+    logger.error('Update lab partner error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete lab partner
+ */
+const deleteLabPartner = async (labId) => {
+  try {
+    // Check if lab has bookings
+    const bookingsResult = await pool.query(
+      'SELECT COUNT(*) as count FROM bookings WHERE lab_partner_id = $1',
+      [labId]
+    );
+    
+    if (parseInt(bookingsResult.rows[0].count) > 0) {
+      throw new Error('Cannot delete lab partner with existing bookings');
+    }
+    
+    await pool.query('DELETE FROM lab_partners WHERE id = $1', [labId]);
+    return { success: true, message: 'Lab partner deleted' };
+  } catch (error) {
+    logger.error('Delete lab partner error:', error);
+    throw error;
+  }
+};
+
+/**
+ * ============================================
+ * TEST PRICING MANAGEMENT
+ * ============================================
+ */
+
+/**
+ * Get test pricing for a lab partner
+ */
+const getTestPricing = async (labPartnerId, testId = null) => {
+  try {
+    let query = `
+      SELECT 
+        ltp.*,
+        t.name as test_name,
+        t.code as test_code,
+        lp.name as lab_partner_name
+      FROM lab_test_pricing ltp
+      JOIN tests t ON ltp.test_id = t.id
+      JOIN lab_partners lp ON ltp.lab_partner_id = lp.id
+      WHERE ltp.lab_partner_id = $1
+    `;
+    
+    const values = [labPartnerId];
+    
+    if (testId) {
+      query += ' AND ltp.test_id = $2';
+      values.push(testId);
+    }
+    
+    query += ' ORDER BY t.name ASC';
+    
+    const result = await pool.query(query, values);
+    return result.rows;
+  } catch (error) {
+    logger.error('Get test pricing error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create/Update test pricing
+ */
+const upsertTestPricing = async (pricingData) => {
+  try {
+    const { lab_partner_id, test_id, price, turnaround_time_hours, is_available } = pricingData;
+    
+    const result = await pool.query(
+      `INSERT INTO lab_test_pricing (
+        lab_partner_id, test_id, price, turnaround_time_hours, is_available
+      ) VALUES ($1, $2, $3, $4, $5)
+      ON CONFLICT (lab_partner_id, test_id)
+      DO UPDATE SET
+        price = EXCLUDED.price,
+        turnaround_time_hours = EXCLUDED.turnaround_time_hours,
+        is_available = EXCLUDED.is_available,
+        updated_at = NOW()
+      RETURNING *`,
+      [
+        lab_partner_id,
+        test_id,
+        price,
+        turnaround_time_hours || 24,
+        is_available !== undefined ? is_available : true,
+      ]
+    );
+    return result.rows[0];
+  } catch (error) {
+    logger.error('Upsert test pricing error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete test pricing
+ */
+const deleteTestPricing = async (pricingId) => {
+  try {
+    await pool.query('DELETE FROM lab_test_pricing WHERE id = $1', [pricingId]);
+    return { success: true, message: 'Test pricing deleted' };
+  } catch (error) {
+    logger.error('Delete test pricing error:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   getDashboardStats,
   getAllBookings,
@@ -468,4 +1056,23 @@ module.exports = {
   deleteFAQ,
   getTerms,
   updateTerms,
+  // Test Categories
+  getAllCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  // Tests
+  getAllTestsAdmin,
+  createTest,
+  updateTest,
+  deleteTest,
+  // Lab Partners
+  getAllLabPartners,
+  createLabPartner,
+  updateLabPartner,
+  deleteLabPartner,
+  // Test Pricing
+  getTestPricing,
+  upsertTestPricing,
+  deleteTestPricing,
 };

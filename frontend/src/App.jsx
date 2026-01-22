@@ -17,6 +17,9 @@ import ReportDetail from './pages/ReportDetail';
 import SmartReport from './pages/SmartReport';
 import NotificationPreferences from './pages/NotificationPreferences';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import ManageTests from './pages/admin/ManageTests';
+import ManageCategories from './pages/admin/ManageCategories';
+import ManageLabPartners from './pages/admin/ManageLabPartners';
 
 function App() {
   return (
@@ -40,6 +43,9 @@ function App() {
         <Route path="/reports/:id" element={<ReportDetail />} />
         <Route path="/reports/:id/smart" element={<SmartReport />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/tests" element={<ManageTests />} />
+        <Route path="/admin/categories" element={<ManageCategories />} />
+        <Route path="/admin/lab-partners" element={<ManageLabPartners />} />
       </Routes>
     </Layout>
   );
