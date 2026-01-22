@@ -43,17 +43,31 @@ const getPhlebotomists = async (filters = {}) => {
       query += ` AND p.availability_status = 'available' AND p.current_bookings_count < p.max_bookings_per_day`;
     }
 
-    query += ' ORDER BY u.first_name, u.last_name';
-
-    // Get total count
-    const countQuery = query.replace(
-      'SELECT \n        u.id,',
-      'SELECT COUNT(*) as total'
-    );
-    const countResult = await pool.query(countQuery, values);
+    // Get total count (before ORDER BY and pagination)
+    let countQuery = `
+      SELECT COUNT(*) as total
+      FROM users u
+      LEFT JOIN phlebotomists p ON u.id = p.user_id
+      WHERE u.user_type = 'phlebotomist'
+    `;
+    const countValues = [];
+    let countParamCount = 1;
+    
+    if (status) {
+      countQuery += ` AND p.availability_status = $${countParamCount}`;
+      countValues.push(status);
+      countParamCount++;
+    }
+    
+    if (availability === 'available') {
+      countQuery += ` AND p.availability_status = 'available' AND p.current_bookings_count < p.max_bookings_per_day`;
+    }
+    
+    const countResult = await pool.query(countQuery, countValues);
     const total = parseInt(countResult.rows[0].total);
-
-    // Add pagination
+    
+    // Add ORDER BY and pagination to main query
+    query += ' ORDER BY u.first_name, u.last_name';
     query += ` LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
     values.push(limit, offset);
 

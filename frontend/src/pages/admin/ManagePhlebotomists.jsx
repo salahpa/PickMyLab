@@ -34,11 +34,15 @@ const ManagePhlebotomists = () => {
       params.append('limit', '20');
 
       const response = await api.get(`/phlebotomists?${params.toString()}`);
-      setPhlebotomists(response.data.data.phlebotomists);
-      setPagination(response.data.data.pagination);
+      
+      // Handle response structure - could be response.data.data or response.data
+      const data = response.data?.data || response.data;
+      setPhlebotomists(data?.phlebotomists || []);
+      setPagination(data?.pagination || {});
     } catch (error) {
       console.error('Error loading phlebotomists:', error);
-      alert('Error loading phlebotomists. Please try again.');
+      console.error('Error details:', error.response?.data);
+      alert(`Error loading phlebotomists: ${error.response?.data?.error?.message || error.message}. Please check console for details.`);
     } finally {
       setLoading(false);
     }
