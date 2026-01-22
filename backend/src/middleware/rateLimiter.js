@@ -5,7 +5,7 @@ const rateLimit = require('express-rate-limit');
  */
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: process.env.NODE_ENV === 'production' ? 100 : 1000, // Higher limit for development
   message: {
     success: false,
     error: {
@@ -15,6 +15,10 @@ const apiLimiter = rateLimit({
   },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  skip: (req) => {
+    // Skip rate limiting in development for localhost
+    return process.env.NODE_ENV === 'development' && (req.ip === '::1' || req.ip === '127.0.0.1');
+  },
 });
 
 /**
@@ -22,7 +26,7 @@ const apiLimiter = rateLimit({
  */
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'production' ? 5 : 50, // Higher limit for development
+  max: process.env.NODE_ENV === 'production' ? 5 : 200, // Higher limit for development
   message: {
     success: false,
     error: {
@@ -33,6 +37,10 @@ const authLimiter = rateLimit({
   skipSuccessfulRequests: true, // Don't count successful requests
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => {
+    // Skip rate limiting in development for localhost
+    return process.env.NODE_ENV === 'development' && req.ip === '::1';
+  },
 });
 
 /**
