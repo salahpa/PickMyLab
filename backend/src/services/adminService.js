@@ -809,14 +809,35 @@ const getAllLabPartners = async (filters = {}) => {
       paramCount++;
     }
     
-    query += ' ORDER BY name ASC';
+    // Get total count (before ORDER BY and pagination)
+    let countQuery = `
+      SELECT COUNT(*) as total
+      FROM lab_partners
+      WHERE 1=1
+    `;
+    const countValues = [];
+    let countParamCount = 1;
     
-    // Get total count
-    let countQuery = query.replace('SELECT *', 'SELECT COUNT(*) as total');
-    const countResult = await pool.query(countQuery, values);
+    if (search) {
+      countQuery += ` AND (
+        name ILIKE $${countParamCount} OR
+        code ILIKE $${countParamCount} OR
+        city ILIKE $${countParamCount}
+      )`;
+      countValues.push(`%${search}%`);
+      countParamCount++;
+    }
+    
+    if (is_active !== undefined) {
+      countQuery += ` AND is_active = $${countParamCount}`;
+      countValues.push(is_active);
+    }
+    
+    const countResult = await pool.query(countQuery, countValues);
     const total = parseInt(countResult.rows[0].total);
     
-    // Add pagination
+    // Add ORDER BY and pagination to main query
+    query += ' ORDER BY name ASC';
     query += ` LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
     values.push(limit, offset);
     
