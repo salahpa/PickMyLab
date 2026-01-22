@@ -22,7 +22,7 @@ const apiLimiter = rateLimit({
  */
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 requests per windowMs
+  max: process.env.NODE_ENV === 'production' ? 5 : 50, // Higher limit for development
   message: {
     success: false,
     error: {
@@ -31,6 +31,8 @@ const authLimiter = rateLimit({
     },
   },
   skipSuccessfulRequests: true, // Don't count successful requests
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 /**
