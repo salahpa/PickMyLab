@@ -20,6 +20,11 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import ManageTests from './pages/admin/ManageTests';
 import ManageCategories from './pages/admin/ManageCategories';
 import ManageLabPartners from './pages/admin/ManageLabPartners';
+import ManageBookings from './pages/admin/ManageBookings';
+import ManageUsers from './pages/admin/ManageUsers';
+import ManagePhlebotomists from './pages/admin/ManagePhlebotomists';
+import ManageContent from './pages/admin/ManageContent';
+import ManageTestPricing from './pages/admin/ManageTestPricing';
 
 function App() {
   return (
@@ -46,6 +51,11 @@ function App() {
         <Route path="/admin/tests" element={<ManageTests />} />
         <Route path="/admin/categories" element={<ManageCategories />} />
         <Route path="/admin/lab-partners" element={<ManageLabPartners />} />
+        <Route path="/admin/bookings" element={<ManageBookings />} />
+        <Route path="/admin/users" element={<ManageUsers />} />
+        <Route path="/admin/phlebotomists" element={<ManagePhlebotomists />} />
+        <Route path="/admin/content" element={<ManageContent />} />
+        <Route path="/admin/pricing" element={<ManageTestPricing />} />
       </Routes>
     </Layout>
   );

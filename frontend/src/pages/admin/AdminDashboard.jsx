@@ -207,6 +207,13 @@ const AdminDashboard = () => {
               <h3>Manage Lab Partners</h3>
               <p>Add and manage lab partners</p>
             </button>
+            <button
+              onClick={() => navigate('/admin/pricing')}
+              className="action-card"
+            >
+              <h3>Manage Test Pricing</h3>
+              <p>Set prices for tests from lab partners</p>
+            </button>
           </div>
         </div>
       </div>
